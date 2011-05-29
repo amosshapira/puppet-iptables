@@ -74,8 +74,8 @@ module Puppet
 
     newparam(:jump) do
       desc "holds value of iptables --jump target
-                  Possible values are: 'ACCEPT', 'DROP', 'REJECT', 'DNAT', 'LOG', 'MASQUERADE', 'REDIRECT'."
-      newvalues(:ACCEPT, :DROP, :REJECT, :DNAT, :LOG, :MASQUERADE, :REDIRECT)
+                  Possible values are: 'ACCEPT', 'DROP', 'REJECT', 'DNAT', 'LOG', 'MASQUERADE', 'REDIRECT', 'NOTRACK'."
+      newvalues(:ACCEPT, :DROP, :REJECT, :DNAT, :LOG, :MASQUERADE, :REDIRECT, :NOTRACK)
       defaultto "DROP"
     end
 
@@ -766,6 +766,11 @@ module Puppet
         if value(:redirect).to_s != ""
           full_string += " --to-ports " + value(:redirect).to_s
           alt_string += " --to-ports " + value(:redirect).to_s
+        end
+      elsif value(:jump).to_s == "NOTRACK"
+        if value(:table).to_s != "raw"
+          invalidrule = true
+          err("NOTRACK only applies to table 'raw'.")
         end
       end
 
